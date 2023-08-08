@@ -14,7 +14,6 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { ItemEntity } from './entity/item.entity';
 import { OptionEntity } from './entity/option.entity';
-import { Type } from './ItemInfo';
 
 @Controller('items')
 export class ItemsController {
@@ -90,6 +89,22 @@ export class ItemsController {
         item_id,
       );
       return readItemDetailResult;
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Put('/:item_id')
+  async updateItem(
+    @Param('item_id', ParseIntPipe) item_id: number,
+    @Body() data,
+  ) {
+    try {
+      const updateItemResult = await this.itemsService.updateItem(
+        item_id,
+        data,
+      );
+      return { sucess: true, message: '상품 수량을 업데이트 했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };
     }

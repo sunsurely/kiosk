@@ -95,4 +95,21 @@ export class ItemsService {
       throw e;
     }
   }
+
+  async updateItem(item_id: number, data) {
+    try {
+      const item = await this.itemRepository.update(
+        { item_id },
+        { amount: data.amount },
+      );
+
+      if (!item) {
+        throw new BadRequestException('데이터 수정에 실패했습니다.');
+      }
+      return true;
+      return item;
+    } catch (e) {
+      throw e;
+    }
+  }
 }
