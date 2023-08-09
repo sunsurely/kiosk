@@ -12,8 +12,10 @@ import {
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateOptionDto } from './dto/create-option.dto';
+import { CreateOrderItemDto } from './dto/create-orderItem.dto';
 import { ItemEntity } from './entity/item.entity';
 import { OptionEntity } from './entity/option.entity';
+import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')
 export class ItemsController {
@@ -97,32 +99,91 @@ export class ItemsController {
   @Put('/:item_id')
   async updateItem(
     @Param('item_id', ParseIntPipe) item_id: number,
-    @Body() data,
+    @Body() updateItemDto: UpdateItemDto,
   ) {
     try {
-      console.log(data);
       const updateItemResult = await this.itemsService.updateItem(
         item_id,
-        data,
+        updateItemDto.name,
+        updateItemDto.price,
+        updateItemDto.type,
       );
-      return { sucess: true, message: '상품 수량을 업데이트 했습니다.' };
+
+      return { sucess: true, message: '상품정보를 업데이트 했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };
     }
   }
 
-  @Delete('/:item_id')
+  @Post('/:item_id/order')
+  async createItemOrder(
+    @Param('item_id', ParseIntPipe) item_id: number,
+    @Body() createOrderItemDto: CreateOrderItemDto,
+  ) {
+    try {
+      const createItemOrderResult = await this.itemsService.createItemOrder(
+        item_id,
+        createOrderItemDto.name,
+        createOrderItemDto.amount,
+      );
+
+      return createItemOrderResult;
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Get('/order/:orderItem_Id')
+  async readItemsOrder(
+    @Param('orderItem_Id', ParseIntPipe) orderItem_Id: number,
+  ) {
+    try {
+      const readItemOrderResult = await this.itemsService.readItemsOrder(
+        orderItem_Id,
+      );
+
+      return { sucess: true, readItemOrderResult };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Put('/order/:order_id')
+  async updateItemOrder(@Param('order_id', ParseIntPipe) orderItem_Id: number) {
+    try {
+      const order = await this.itemsService.updateItemOrderWithQueryRunner(
+        orderItem_Id,
+      );
+      return { success: true, order };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Delete('/:item_id/:orderItem_Id')
   async deleteItem(
     @Param('item_id', ParseIntPipe) item_id: number,
+    @Param('orderItem_Id', ParseIntPipe) orderItem_Id: number,
     @Body() data,
   ) {
     try {
       const item = await this.itemsService.readItemDetail(item_id);
+      const order = await this.itemsService.readItemsOrder(orderItem_Id);
       const amount = item.amount;
-      if (amount !== 0 && !data.check) {
-        return { message: '수량이 남았습니다. 메뉴를 삭제하시겠습니까?' };
+      const orderStatus = order.status;
+      if (!data.check) {
+        if (amount !== 0) {
+          return {
+            message: `수량이 ${amount}개 남았습니다. 메뉴를 삭제하시겠습니까?`,
+          };
+        }
+        if (orderStatus !== 'completed') {
+          return {
+            message: `상품 발주 처리가 완료되지 않았습니다. 메뉴를 삭제하시겠습니까?`,
+          };
+        }
       }
-      await this.itemsService.deleteItem(item_id);
+      await this.itemsService.deleteItemWithQueryRunner(item_id, orderItem_Id);
       return { sucess: true, message: '상품을 삭제했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };

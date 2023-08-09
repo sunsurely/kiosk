@@ -7,9 +7,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { OptionEntity } from './option.entity';
 import { Type } from '../ItemInfo';
+import { OrderItemEntity } from './orderItem.entity';
 
 @Entity({ schema: 'kiosk', name: 'items' })
 export class ItemEntity {
@@ -43,4 +45,8 @@ export class ItemEntity {
   @ManyToOne(() => OptionEntity, (option) => option.items)
   @JoinColumn({ name: 'option_id' })
   option: OptionEntity;
+
+  @OneToOne(() => OrderItemEntity, (order) => order.item)
+  @JoinColumn({ name: 'item_id' })
+  order: OrderItemEntity;
 }
