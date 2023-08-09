@@ -81,6 +81,7 @@ export class ItemsService {
           'item.name',
           'item.price',
           'item.type',
+          'item.amount',
           'option.extra_price',
           'option.shot_price',
           'option.hot',
@@ -106,8 +107,20 @@ export class ItemsService {
       if (!item) {
         throw new BadRequestException('데이터 수정에 실패했습니다.');
       }
-      return true;
+
       return item;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async deleteItem(item_id: number) {
+    try {
+      const deleteItemResult = await this.itemRepository.delete({ item_id });
+
+      if (!deleteItemResult) {
+        throw new BadRequestException('데이터 삭제에 실패했습니다.');
+      }
     } catch (e) {
       throw e;
     }

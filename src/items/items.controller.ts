@@ -100,11 +100,30 @@ export class ItemsController {
     @Body() data,
   ) {
     try {
+      console.log(data);
       const updateItemResult = await this.itemsService.updateItem(
         item_id,
         data,
       );
       return { sucess: true, message: '상품 수량을 업데이트 했습니다.' };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Delete('/:item_id')
+  async deleteItem(
+    @Param('item_id', ParseIntPipe) item_id: number,
+    @Body() data,
+  ) {
+    try {
+      const item = await this.itemsService.readItemDetail(item_id);
+      const amount = item.amount;
+      if (amount !== 0 && !data.check) {
+        return { message: '수량이 남았습니다. 메뉴를 삭제하시겠습니까?' };
+      }
+      await this.itemsService.deleteItem(item_id);
+      return { sucess: true, message: '상품을 삭제했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };
     }
