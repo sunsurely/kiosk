@@ -14,6 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { ItemsModule } from './items/items.module';
+import { CustomersOrderModule } from './customers-order/customers-order.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ItemsModule } from './items/items.module';
     }),
     UsersModule,
     ItemsModule,
+    CustomersOrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

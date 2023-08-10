@@ -13,8 +13,8 @@ import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { CreateOrderItemDto } from './dto/create-orderItem.dto';
-import { ItemEntity } from './entity/item.entity';
-import { OptionEntity } from './entity/option.entity';
+import { ItemEntity } from '../entities/item.entity';
+import { OptionEntity } from '../entities/option.entity';
 import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')
@@ -75,7 +75,7 @@ export class ItemsController {
   }
 
   @Get('/types')
-  async readItemsByType(@Query('type') type) {
+  async readItemsByType(@Body('type') type: string) {
     try {
       const readItemsResult = await this.itemsService.readItemsByType(type);
       return readItemsResult;
@@ -90,9 +90,10 @@ export class ItemsController {
       const readItemDetailResult = await this.itemsService.readItemDetail(
         item_id,
       );
-      return readItemDetailResult;
+
+      return { status: 200, success: true, readItemDetailResult };
     } catch (e) {
-      return { success: false, message: e.message };
+      return { status: e.status, success: false, message: e.message };
     }
   }
 
@@ -110,6 +111,52 @@ export class ItemsController {
       );
 
       return { sucess: true, message: '상품정보를 업데이트 했습니다.' };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  @Delete('/:item_id')
+  async deleteItem(
+    @Param('item_id', ParseIntPipe) item_id: number,
+    @Body() data,
+  ) {
+    try {
+      const item = await this.itemsService.readItemDetail(item_id);
+
+      const amount = item.amount;
+
+      if (!data.check) {
+        if (amount !== 0) {
+          return {
+            message: `수량이 ${amount}개 남았습니다. 메뉴를 삭제하시겠습니까?`,
+          };
+        }
+        if (data.order_id) {
+          const order = await this.itemsService.readItemsOrder(
+            data.orderItem_Id,
+          );
+          const orderStatus = order.status;
+          if (orderStatus !== 'completed') {
+            return {
+              message: `상품 발주 처리가 완료되지 않았습니다. 메뉴를 삭제하시겠습니까?`,
+            };
+          }
+        }
+      } else {
+        if (data.order_id) {
+          await this.itemsService.deleteItemWithQueryRunner(
+            item_id,
+            data.orderItem_Id,
+          );
+        } else {
+          await this.itemsService.deleteItem(item_id);
+          return { status: 201, success: true, message: '삭제성공' };
+        }
+      }
+
+      await this.itemsService.deleteItem(item_id);
+      return { sucess: true, message: '상품을 삭제했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };
     }
@@ -155,36 +202,6 @@ export class ItemsController {
         orderItem_Id,
       );
       return { success: true, order };
-    } catch (e) {
-      return { success: false, message: e.message };
-    }
-  }
-
-  @Delete('/:item_id/:orderItem_Id')
-  async deleteItem(
-    @Param('item_id', ParseIntPipe) item_id: number,
-    @Param('orderItem_Id', ParseIntPipe) orderItem_Id: number,
-    @Body() data,
-  ) {
-    try {
-      const item = await this.itemsService.readItemDetail(item_id);
-      const order = await this.itemsService.readItemsOrder(orderItem_Id);
-      const amount = item.amount;
-      const orderStatus = order.status;
-      if (!data.check) {
-        if (amount !== 0) {
-          return {
-            message: `수량이 ${amount}개 남았습니다. 메뉴를 삭제하시겠습니까?`,
-          };
-        }
-        if (orderStatus !== 'completed') {
-          return {
-            message: `상품 발주 처리가 완료되지 않았습니다. 메뉴를 삭제하시겠습니까?`,
-          };
-        }
-      }
-      await this.itemsService.deleteItemWithQueryRunner(item_id, orderItem_Id);
-      return { sucess: true, message: '상품을 삭제했습니다.' };
     } catch (e) {
       return { success: false, message: e.message };
     }

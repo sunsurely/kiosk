@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ItemEntity } from './entity/item.entity';
+import { ItemEntity } from '../entities/item.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ItemsController } from './items.controller';
 import { ItemsService } from './items.service';
-import { OptionEntity } from './entity/option.entity';
-import { OrderItemEntity } from './entity/orderItem.entity';
+import { OptionEntity } from '../entities/option.entity';
+import { OrderItemEntity } from '../entities/orderItem.entity';
 
 @Module({
   imports: [

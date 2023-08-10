@@ -8,10 +8,12 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { OptionEntity } from './option.entity';
-import { Type } from '../ItemInfo';
+import { Type } from '../items/ItemInfo';
 import { OrderItemEntity } from './orderItem.entity';
+import { Customer_OrderItemEntity } from './customer_orderItem.entity';
 
 @Entity({ schema: 'kiosk', name: 'items' })
 export class ItemEntity {
@@ -46,7 +48,10 @@ export class ItemEntity {
   @JoinColumn({ name: 'option_id' })
   option: OptionEntity;
 
-  @OneToOne(() => OrderItemEntity, (order) => order.item)
+  @OneToMany(() => OrderItemEntity, (order) => order.item)
   @JoinColumn({ name: 'item_id' })
-  order: OrderItemEntity;
+  order: OrderItemEntity[];
+
+  @OneToMany(() => Customer_OrderItemEntity, (order) => order.item)
+  orders: Customer_OrderItemEntity[];
 }

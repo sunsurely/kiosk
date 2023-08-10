@@ -32,7 +32,7 @@ export class UsersController {
 
       return { message: '로그인에 성공했습니다.', accessToken: loginResult };
     } catch (e) {
-      return { success: false, message: e.message };
+      return { statusCode: e.status, success: false, message: e.message };
     }
   }
 }

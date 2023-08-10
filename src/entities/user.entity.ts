@@ -6,7 +6,7 @@ import {
   DeleteDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Status } from './UserInfo';
+import { Status } from '../users/UserInfo';
 
 @Entity({ schema: 'kiosk', name: 'users' })
 export class UserEntity {

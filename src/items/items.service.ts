@@ -2,12 +2,13 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { ItemEntity } from './entity/item.entity';
-import { OptionEntity } from './entity/option.entity';
-import { OrderItemEntity } from './entity/orderItem.entity';
+import { ItemEntity } from '../entities/item.entity';
+import { OptionEntity } from '../entities/option.entity';
+import { OrderItemEntity } from '../entities/orderItem.entity';
 import { Type } from './ItemInfo';
 import { Status } from './orderInfo';
 
@@ -96,6 +97,10 @@ export class ItemsService {
         .andWhere('item.deletedAt IS NULL')
         .getOne();
 
+      if (!item) {
+        throw new NotFoundException('찾는 상품이 없습니다.');
+      }
+
       return item;
     } catch (e) {
       throw e;
@@ -119,12 +124,23 @@ export class ItemsService {
     }
   }
 
-  async deleteItemWithQueryRunner(item_id: number, orderItem_id: number) {
+  async deleteItem(item_id: number) {
+    try {
+      const deleteItemResult = await this.itemRepository.delete({ item_id });
+      if (!deleteItemResult) {
+        throw new NotImplementedException('삭제실패');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async deleteItemWithQueryRunner(item_id: number, orderItem_Id: number) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.delete(OrderItemEntity, orderItem_id);
+      await queryRunner.manager.delete(OrderItemEntity, orderItem_Id);
 
       await queryRunner.manager.delete(ItemEntity, item_id);
       await queryRunner.commitTransaction();

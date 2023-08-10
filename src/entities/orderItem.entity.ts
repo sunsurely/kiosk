@@ -8,12 +8,12 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Status } from '../orderInfo';
+import { Status } from '../items/orderInfo';
 import { ItemEntity } from './item.entity';
 
-@Entity({ schema: 'kiosk', name: 'orderItems' })
+@Entity({ schema: 'kiosk', name: 'orderitems' })
 export class OrderItemEntity {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'orderItem_Id' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'orderitem_id' })
   orderItem_Id: number;
 
   @Column('varchar', { length: 30 })
@@ -37,7 +37,7 @@ export class OrderItemEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @OneToOne(() => ItemEntity, (item) => item.order)
+  @OneToOne(() => ItemEntity, (item) => item.orders)
   @JoinColumn({ name: 'item_id' })
   item: ItemEntity;
 }
