@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { CustomersOrderService } from './customers-order.service';
 import { CreateCustomersOrderDto } from './dto/create-customers-order.dto';
@@ -18,9 +20,11 @@ export class CustomersOrderController {
   @Post()
   async createCustomerOrder(@Body() orderDto: CreateCustomersOrderDto[]) {
     try {
+      let sum = 0;
       const createOrderResult =
         await this.customersOrderService.createCustomerOrder();
       for (const order of orderDto) {
+        sum += order.price;
         await this.customersOrderService.createCustomerOrderItems(
           order.item_id,
           order.amount,
@@ -30,32 +34,46 @@ export class CustomersOrderController {
         );
       }
 
-      return { statusCode: 201, sucess: true, message: createOrderResult };
+      return {
+        statusCode: 201,
+        sucess: true,
+        message: createOrderResult,
+        total: sum,
+      };
     } catch (e) {
       return { status: e.status, success: false, message: e.message };
     }
   }
 
-  @Get()
-  findAll() {
-    return this.customersOrderService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.customersOrderService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCustomersOrderDto: UpdateCustomersOrderDto,
+  @Put('/:customerOrder_id')
+  async updateCustomersOrder(
+    @Body() data: boolean,
+    @Param('customerOrder_id', ParseIntPipe) customerOrder_id: number,
   ) {
-    return this.customersOrderService.update(+id, updateCustomersOrderDto);
+    try {
+      return this.customersOrderService.updateCustomersOrder(
+        data,
+        customerOrder_id,
+      );
+    } catch (e) {
+      return { status: e.status, success: false, message: e.message };
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.customersOrderService.remove(+id);
+  @Delete('/:customerOrder_id')
+  async deleteCustomersOrder(
+    @Param('customerOrder_id', ParseIntPipe) customerOrder_id: number,
+  ) {
+    try {
+      const deleteCustomersOrderResult =
+        await this.customersOrderService.deleteCustomersOrder(customerOrder_id);
+      return {
+        statusCode: 201,
+        sucess: true,
+        deleteCustomersOrderResult,
+      };
+    } catch (e) {
+      return { status: e.status, success: false, message: e.message };
+    }
   }
 }
