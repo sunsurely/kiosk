@@ -1,5 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
-import { Transform } from 'class-transformer';
 import { IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateOptionDto {

@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { CustomersOrderService } from './customers-order.service';
 import { CreateCustomersOrderDto } from './dto/create-customers-order.dto';
@@ -47,7 +48,11 @@ export class CustomersOrderController {
   @Put('/:customerOrder_id')
   async updateCustomersOrder(
     @Body() data: boolean,
-    @Param('customerOrder_id', ParseIntPipe) customerOrder_id: number,
+    @Param(
+      'customerOrder_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    customerOrder_id: number,
   ) {
     try {
       return this.customersOrderService.updateCustomersOrder(
@@ -61,7 +66,11 @@ export class CustomersOrderController {
 
   @Delete('/:customerOrder_id')
   async deleteCustomersOrder(
-    @Param('customerOrder_id', ParseIntPipe) customerOrder_id: number,
+    @Param(
+      'customerOrder_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    customerOrder_id: number,
   ) {
     try {
       const deleteCustomersOrderResult =

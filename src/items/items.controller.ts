@@ -8,6 +8,7 @@ import {
   Query,
   Delete,
   ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { ItemsOptionsService } from 'src/cache/itemsOption.service';
@@ -28,7 +29,11 @@ export class ItemsController {
   @Post('/registItems/:option_id')
   async createItem(
     @Body() createItems: CreateItemDto[],
-    @Param('option_id', ParseIntPipe) option_id: number,
+    @Param(
+      'option_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    option_id: number,
   ) {
     try {
       const createItemResults: ItemEntity[] = [];
@@ -89,7 +94,13 @@ export class ItemsController {
   }
 
   @Get('/detail/:item_id')
-  async readItemDetail(@Param('item_id', ParseIntPipe) item_id: number) {
+  async readItemDetail(
+    @Param(
+      'item_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    item_id: number,
+  ) {
     try {
       const readItemDetailResult = await this.itemsService.readItemDetail(
         item_id,
@@ -109,7 +120,11 @@ export class ItemsController {
 
   @Put('/:item_id')
   async updateItem(
-    @Param('item_id', ParseIntPipe) item_id: number,
+    @Param(
+      'item_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    item_id: number,
     @Body() updateItemDto: UpdateItemDto,
   ) {
     try {
@@ -132,7 +147,11 @@ export class ItemsController {
 
   @Delete('/:item_id')
   async deleteItem(
-    @Param('item_id', ParseIntPipe) item_id: number,
+    @Param(
+      'item_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    item_id: number,
     @Body() data,
   ) {
     try {
@@ -178,7 +197,11 @@ export class ItemsController {
 
   @Post('/:item_id/order')
   async createItemOrder(
-    @Param('item_id', ParseIntPipe) item_id: number,
+    @Param(
+      'item_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    item_id: number,
     @Body() createOrderItemDto: CreateOrderItemDto,
   ) {
     try {
@@ -196,7 +219,11 @@ export class ItemsController {
 
   @Get('/order/:orderItem_Id')
   async readItemsOrder(
-    @Param('orderItem_Id', ParseIntPipe) orderItem_Id: number,
+    @Param(
+      'orderItem_Id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    orderItem_Id: number,
   ) {
     try {
       const readItemOrderResult = await this.itemsService.readItemsOrder(
@@ -210,7 +237,13 @@ export class ItemsController {
   }
 
   @Put('/order/:order_id')
-  async updateItemOrder(@Param('order_id', ParseIntPipe) orderItem_Id: number) {
+  async updateItemOrder(
+    @Param(
+      'order_id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    orderItem_Id: number,
+  ) {
     try {
       const order = await this.itemsService.updateItemOrderWithQueryRunner(
         orderItem_Id,
