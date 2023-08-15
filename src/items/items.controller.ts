@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
-import { ItemsOptionsService } from 'src/cache/itemsOption.service';
+import { ItemsOptionsService } from 'src/items/itemsOption.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { CreateOrderItemDto } from './dto/create-orderItem.dto';

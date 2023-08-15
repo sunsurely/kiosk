@@ -17,7 +17,7 @@ export class ItemsOptionsService {
       const options: OptionEntity[] = await this.optionRepository.find();
 
       for (const option of options) {
-        this.cache.set(`cacheKey${option.option_id}`, option);
+        this.cache.set(`${process.env.CACHE_KEY}${option.option_id}`, option);
       }
 
       console.log('options 데이터 캐싱 성공');
@@ -28,7 +28,9 @@ export class ItemsOptionsService {
 
   getCachedOption = (option_id) => {
     try {
-      const cachedOption: OptionEntity = this.cache.get(`cacheKey${option_id}`);
+      const cachedOption: OptionEntity = this.cache.get(
+        `${process.env.CACHE_KEY}${option_id}`,
+      );
       if (!cachedOption) {
         throw new NotFoundException('캐시된 데이터 불러오기 실패');
       }

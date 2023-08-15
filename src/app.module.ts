@@ -15,7 +15,6 @@ import { JwtConfigService } from './config/jwt.config.service';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { ItemsModule } from './items/items.module';
 import { CustomersOrderModule } from './customers-order/customers-order.module';
-import { ItemsOptionModule } from './cache/ItemsOption.module';
 
 @Module({
   imports: [
@@ -30,7 +29,6 @@ import { ItemsOptionModule } from './cache/ItemsOption.module';
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
-    ItemsOptionModule,
     UsersModule,
     ItemsModule,
     CustomersOrderModule,
