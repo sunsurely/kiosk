@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { CustomersOrderService } from './customers-order.service';
 import { CreateCustomersOrderDto } from './dto/create-customers-order.dto';
-import { UpdateCustomersOrderDto } from './dto/update-customers-order.dto';
 
 @Controller('customers_order')
 export class CustomersOrderController {

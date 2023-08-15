@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
+import { ItemsOptionsService } from 'src/cache/itemsOption.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { CreateOrderItemDto } from './dto/create-orderItem.dto';
@@ -19,7 +20,10 @@ import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')
 export class ItemsController {
-  constructor(private readonly itemsService: ItemsService) {}
+  constructor(
+    private readonly itemsService: ItemsService,
+    private readonly itemsOption: ItemsOptionsService,
+  ) {}
 
   @Post('/registItems/:option_id')
   async createItem(
@@ -91,7 +95,13 @@ export class ItemsController {
         item_id,
       );
 
-      return { status: 200, success: true, readItemDetailResult };
+      const itemsOption = await this.itemsOption.getCachedOption(
+        readItemDetailResult.option_id,
+      );
+
+      const responseData = { readItemDetailResult, itemsOption };
+
+      return { status: 200, success: true, responseData };
     } catch (e) {
       return { status: e.status, success: false, message: e.message };
     }
@@ -103,14 +113,18 @@ export class ItemsController {
     @Body() updateItemDto: UpdateItemDto,
   ) {
     try {
-      const updateItemResult = await this.itemsService.updateItem(
+      await this.itemsService.updateItem(
         item_id,
         updateItemDto.name,
         updateItemDto.price,
         updateItemDto.type,
       );
 
-      return { sucess: true, message: '상품정보를 업데이트 했습니다.' };
+      return {
+        status: 204,
+        sucess: true,
+        message: '상품정보를 업데이트 했습니다.',
+      };
     } catch (e) {
       return { success: false, message: e.message };
     }

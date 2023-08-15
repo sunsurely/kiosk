@@ -88,11 +88,8 @@ export class ItemsService {
           'item.price',
           'item.type',
           'item.amount',
-          'option.extra_price',
-          'option.shot_price',
-          'option.hot',
+          'item.option_id',
         ])
-        .leftJoinAndSelect('item.option', 'option')
         .where('item.item_id=:item_id', { item_id })
         .andWhere('item.deletedAt IS NULL')
         .getOne();

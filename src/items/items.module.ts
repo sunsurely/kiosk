@@ -8,17 +8,19 @@ import { ItemsController } from './items.controller';
 import { ItemsService } from './items.service';
 import { OptionEntity } from '../entities/option.entity';
 import { OrderItemEntity } from '../entities/orderItem.entity';
+import { ItemsOptionModule } from 'src/cache/ItemsOption.module';
+import { ItemsOptionsService } from 'src/cache/itemsOption.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ItemEntity, OptionEntity, OrderItemEntity]),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, ItemsOptionModule],
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
   ],
   controllers: [ItemsController],
-  providers: [ItemsService],
+  providers: [ItemsService, ItemsOptionsService],
 })
 export class ItemsModule {}
