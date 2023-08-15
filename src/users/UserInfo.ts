@@ -5,6 +5,6 @@ export interface UserInfo {
 }
 
 export enum Status {
-  ADMIN = 'admon',
+  ADMIN = 'admin',
   NORMAL = 'normal',
 }
